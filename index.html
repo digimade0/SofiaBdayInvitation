@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sofia's Under the Sea Adventure!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-ocean: #006994;
+            --mermaid-teal: #20b2aa;
+            --soft-aqua: #e0f7fa;
+            --pearl-white: #f0f4f7;
+            --coral-pink: #ff7f50;
+            --bubble-color: rgba(255, 255, 255, 0.4);
+            --sparkle-color: #7fffd4; 
+        }
+
+        /* Basic Reset */
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--soft-aqua);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; 
+            background-image: radial-gradient(circle at center, #ffffff 0%, #b2ebf2 100%);
+        }
+
+        /* FULL SCREEN OVERLAY */
+        #ocean-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(180deg, var(--mermaid-teal) 0%, var(--deep-ocean) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: all 1s ease-in-out;
+        }
+
+        .clamshell {
+            font-size: 120px;
+            cursor: pointer;
+            filter: drop-shadow(0 0 20px white);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .click-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: white;
+            margin-top: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* THE INVITATION CARD */
+        .card-container {
+            width: 95%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            position: relative;
+            overflow: hidden;
+            border: 8px solid var(--mermaid-teal);
+            border-radius: 50px;
+            box-shadow: 0 15px 50px rgba(0,105,148,0.3);
+            display: flex;
+            flex-direction: row; 
+            padding: 30px;
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10;
+        }
+
+        /* Faded Scale Background Pattern */
+        .card-container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: radial-gradient(circle at 100% 150%, var(--soft-aqua) 24%, var(--mermaid-teal) 25%, var(--mermaid-teal) 28%, var(--soft-aqua) 29%, var(--soft-aqua) 36%, var(--mermaid-teal) 36%, var(--mermaid-teal) 40%, transparent 40%, transparent);
+            background-size: 40px 40px;
+            opacity: 0.20; 
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            .card-container {
+                flex-direction: column; 
+                padding: 20px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        }
+
+        .image-box {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .mermaid-img {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+        }
+
+        .content-box {
+            flex: 1.2;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; /* Centers horizontally within the box */
+            text-align: center;    /* Centers the text lines */
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.3); 
+            border-radius: 30px;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--deep-ocean);
+            font-size: clamp(2.2rem, 8vw, 3.5rem);
+            margin: 10px 0;
+            text-shadow: 1px 1px 0px rgba(255,255,255,0.8);
+            line-height: 1.1;
+        }
+
+        .event-info {
+            width: 100%;
+            font-size: clamp(1rem, 4vw, 1.1rem);
+            color: #222;
+            font-weight: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers detail rows */
+        }
+
+        .detail-row { 
+            margin: 15px 0; 
+            width: 100%;
+        }
+
+        .label {
+            color: var(--mermaid-teal);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .reply-btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 35px;
+            background-color: var(--coral-pink);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 127, 80, 0.4);
+            transition: all 0.3s ease;
+            border: 2px solid white;
+        }
+
+        .reply-btn:hover {
+            transform: scale(1.05);
+            background-color: #ff6a3d;
+        }
+
+        /* Sparkle/Bubble Animations */
+        .falling-star {
+            position: fixed;
+            top: -20px;
+            color: var(--sparkle-color);
+            pointer-events: none;
+            z-index: 9999;
+            animation: fall linear forwards;
+            text-shadow: 0 0 5px white;
+        }
+
+        .bubble {
+            position: fixed;
+            bottom: -50px;
+            background-color: var(--bubble-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            animation: rise linear forwards;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+        @keyframes rise {
+            to { transform: translateY(-110vh) translateX(50px); opacity: 0; }
+        }
+
+        body.active #ocean-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-100%);
+        }
+
+        body.active .card-container {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="magicSound" src="https://www.soundjay.com/misc/sounds/bubbles-1.mp3"></audio>
+
+    <div id="ocean-overlay" onclick="revealMagic()">
+        <div class="clamshell">🐚</div>
+        <div class="click-text">Tap to open!</div>
+        <p style="color: white; margin-top: 25px; font-weight: 600; letter-spacing: 2px; opacity: 0.8;">A MAGICAL JOURNEY AWAITS...</p>
+    </div>
+
+    <div class="card-container">
+        <div class="image-box">
+            <img src="mermaid.gif" class="mermaid-img" alt="Mermaid">
+        </div>
+
+        <div class="content-box">
+            <p style="margin: 0; color: var(--mermaid-teal); font-weight: 700; letter-spacing: 2px; font-size: 0.85rem;">YOU'RE INVITED TO</p>
+            <h1>Sofia's 7th Birthday</h1>
+            
+            <div class="event-info">
+                <div class="detail-row">
+                    <span class="label">Where</span>
+                    <strong>The Mermaid Lagoon</strong><br>
+                    123 Sparkle Drive, Coral City
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">Date & Time</span>
+                    <strong>Saturday, October 24, 2026</strong><br>
+                    2:00 PM - 5:00 PM
+                </div>
+            </div>
+
+            <a href="https://www.facebook.com/kolmikayeee" target="_blank" class="reply-btn">
+                Swim over to RSVP ✨
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function revealMagic() {
+            const sound = document.getElementById('magicSound');
+            sound.play().catch(() => {});
+            
+            document.body.classList.add('active');
+            
+            setInterval(createBubble, 300);
+            setInterval(createSparkle, 150);
+        }
+
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            const size = Math.random() * 30 + 10 + "px";
+            bubble.style.width = size;
+            bubble.style.height = size;
+            bubble.style.left = Math.random() * 100 + "vw";
+            bubble.style.animationDuration = Math.random() * 4 + 3 + "s";
+            document.body.appendChild(bubble);
+            setTimeout(() => { bubble.remove(); }, 6000);
+        }
+
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('falling-star');
+            const shapes = ['✨', '⭐', '⚪', '🫧', '🐚', '✦'];
+            sparkle.innerText = shapes[Math.floor(Math.random() * shapes.length)];
+            sparkle.style.left = Math.random() * 100 + "vw";
+            sparkle.style.animationDuration = Math.random() * 3 + 2 + "s";
+            sparkle.style.opacity = "0.6";
+            sparkle.style.fontSize = Math.random() * 15 + 10 + "px";
+            document.body.appendChild(sparkle);
+            setTimeout(() => { sparkle.remove(); }, 5000);
+        }
+    </script>
+</body>
+</html>
